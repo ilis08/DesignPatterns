@@ -2,119 +2,70 @@
 
 namespace AbstractFactoryPattern
 {
-    public interface IDog
+    public abstract class Program
     {
-        void Speak();
-        void Action();
+        public abstract void ProgramType();
     }
 
-    public interface ITiger
+    public class Web : Program
     {
-        void Speak();
-        void Action();
-
-    }
-
-    #region Wild Animal collection
-
-    class WildDog : IDog
-    {
-        public void Action()
+        public override void ProgramType()
         {
-            Console.WriteLine("Wild Dogs prefer to roam freely in jungles.\n");
-        }
-
-        public void Speak()
-        {
-            Console.WriteLine("Wild Dog says: Bow-Wow.");
+            Console.WriteLine("Create Web program");
         }
     }
 
-    class WildTiger : ITiger
+    public class Desktop : Program
     {
-        public void Action()
+        public override void ProgramType()
         {
-            Console.WriteLine("Wild Tigers prefer hunting in jungles.\n");
-        }
-
-        public void Speak()
-        {
-            Console.WriteLine("Wild Tigers prefer hunting in jungles.\n");
-        }
-    }
-    #endregion
-
-    #region Pet Animal collection
-    class PetDog : IDog
-    {
-        public void Action()
-        {
-            Console.WriteLine("Pet Dogs prefer to stay  at home.\n");
-        }
-
-        public void Speak()
-        {
-            Console.WriteLine("Pet Dog says: Bow-Wow");
+            Console.WriteLine("Create Desktop program");
         }
     }
 
-    class PetTiger : ITiger
+    public abstract class DeveloperFactory
     {
-        public void Action()
-        {
-            Console.WriteLine("Pet Tigers play in an animal circus.\n");
-        }
+        public abstract Program ReturnProgram();
+    }
 
-        public void Speak()
+    public class WebDeveloper : DeveloperFactory
+    {
+        public override Program ReturnProgram()
         {
-            Console.WriteLine("Pet Tiger says: Halum.");
+            return new Web();
         }
     }
 
-    #endregion
-
-    public interface IAnimalFactory
+    public class DesktopDeveloper : DeveloperFactory
     {
-        IDog GetDog();
-        ITiger GetTiger();
-    }
-
-    public class WildAnimalFactory : IAnimalFactory
-    {
-        public IDog GetDog()
+        public override Program ReturnProgram()
         {
-            return new WildDog();
-        }
-
-        public ITiger GetTiger()
-        {
-            return new WildTiger();
+            return new Desktop(); 
         }
     }
 
-    public class PetAnimalFactory : IAnimalFactory
+    public class Programmer
     {
-        public IDog GetDog()
+        private Program program;
+
+        public Programmer(DeveloperFactory factory)
         {
-            return new PetDog();
+            program = factory.ReturnProgram();
         }
 
-        public ITiger GetTiger()
+        public void Program()
         {
-            return new PetTiger();
+            program.ProgramType();
         }
     }
 
-    class Program
+    class Start
     {
         static void Main(string[] args)
         {
-            IAnimalFactory wildAnimalFactory = new WildAnimalFactory();
+            Programmer programmer = new Programmer(new WebDeveloper());
 
-            IDog wildDog = wildAnimalFactory.GetDog();
-
-            wildDog.Speak();
-            wildDog.Action();
+            programmer.Program();
         }
     }
 }

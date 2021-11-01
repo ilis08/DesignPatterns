@@ -16,6 +16,14 @@ namespace BuilderPattern
             Computer c = computer.CreateComputer();
 
             c.ShowComputerStates();
+
+            IBuilder computer2 = new HighSegmentComputer("AsusShift");
+
+            director.Construct(computer2);
+
+            Computer c1 = computer2.CreateComputer();
+
+            c1.ShowComputerStates();
         }
     }
 
@@ -46,11 +54,18 @@ namespace BuilderPattern
         }
     }
 
+    public enum Segment
+    {
+        Low,
+        Middle,
+        High
+    }
+
     public class Computer
     {
         public string Name { get; set; }
 
-        public string Segment { get; set; }
+        public Segment Segment { get; set; }
 
         public int Price { get; set; }
 
@@ -75,7 +90,7 @@ namespace BuilderPattern
         }
     }
 
-    public class LowSegmentComputer : Computer, IBuilder
+    public class LowSegmentComputer : IBuilder
     {
         private Computer computer;
 
@@ -112,7 +127,7 @@ namespace BuilderPattern
 
         public void SetSegment()
         {
-            computer.Segment = "Low";
+            computer.Segment = Segment.Low;
         }
 
         public void SetPrice()
@@ -120,6 +135,54 @@ namespace BuilderPattern
             Random r = new Random();
 
             computer.Price = r.Next(1000, 3000);
+        }
+    }
+
+    public class HighSegmentComputer : IBuilder
+    {
+        private Computer computer;
+
+        public HighSegmentComputer(string name)
+        {
+            computer = new Computer();
+            computer.Name = name;
+        }
+
+        public void AddComputerCase()
+        {
+            computer.Case = "Corsair Computer Case Graphite Series 760T";
+        }
+
+        public void AddGraphicsCard()
+        {
+            computer.GraphicCard = "MSI GeForce RTX 3090 Ventus 3X 24G OC ";
+        }
+
+        public void AddMotherboard()
+        {
+            computer.MotherBoard = "GIGABYTE X299X Xtreme WaterForce ";
+        }
+
+        public void AddProcessor()
+        {
+            computer.Proc = "AMD Ryzen Threadripper 3990X 2.9GHz/256MB ";
+        }
+
+        public Computer CreateComputer()
+        {
+            return computer;
+        }
+
+        public void SetPrice()
+        {
+            Random r = new Random();
+
+            computer.Price = r.Next(10000, 100000);
+        }
+
+        public void SetSegment()
+        {
+            computer.Segment = Segment.High;
         }
     }
 

@@ -2,66 +2,46 @@
 
 namespace FactoryMethodPattern
 {
-    public interface IAnimal
+    public interface ITable
     {
-        void Speak();
-        void Action();
+
     }
 
-    public class Dog : IAnimal
+    public class WoodTable : ITable
     {
-        public void Action()
+        public WoodTable()
         {
-            Console.WriteLine("Dogs prefer barking...\n");
-        }
-
-        public void Speak()
-        {
-            Console.WriteLine("Dog says: Bow-Wow.");
+            Console.WriteLine("Wood table was built");
         }
     }
 
-    public class Tiger : IAnimal
+    public class IronTable : ITable
     {
-        public void Action()
+        public IronTable()
         {
-            Console.WriteLine("Tiger prefer hunting...\n");
-        }
-
-        public void Speak()
-        {
-            Console.WriteLine("Tiger says: Halum.");
+            Console.WriteLine("IronTable was built");
         }
     }
 
-    public abstract class IAnimalFactory
+    public abstract class TableFactory
     {
-        public abstract IAnimal CreateAnimal();
+        public abstract ITable CreateTable();
 
-        public IAnimal MakeAnimal()
+    }
+
+    public class WoodTableFactory : TableFactory
+    {
+        public override ITable CreateTable()
         {
-            Console.WriteLine("\n IAnimalFactory.MakeAnimal()-You cannot ignire parent rules.");
-
-            IAnimal animal = CreateAnimal();
-            animal.Speak();
-            animal.Action();
-            return animal;
+            return new WoodTable();
         }
     }
 
-    public class DogFactory : IAnimalFactory
+    public class IronTableFactory : TableFactory
     {
-        public override IAnimal CreateAnimal()
+        public override ITable CreateTable()
         {
-            return new Dog();
-        }
-    }
-
-    public class TigerFactory : IAnimalFactory
-    {
-        public override IAnimal CreateAnimal()
-        {
-            return new Tiger();
+            return new IronTable();
         }
     }
 
@@ -69,9 +49,10 @@ namespace FactoryMethodPattern
     {
         static void Main(string[] args)
         {
-            IAnimalFactory tigerFactory = new TigerFactory();
+            TableFactory factory = new WoodTableFactory();
 
-            IAnimal aTiger = tigerFactory.MakeAnimal();
+            ITable table = factory.CreateTable();
+
         }
     }
 }

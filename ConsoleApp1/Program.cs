@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SingletonePattern
 {
@@ -7,40 +9,68 @@ namespace SingletonePattern
     {
         static void Main(string[] args)
         {
-            (new Thread(() =>
+            List<Task<Singleton>> tasks = new();
+
+            for (int i = 0; i < 100; i++)
             {
-                Singleton s1 = Singleton.Instance;
-                Console.WriteLine(s1.Date);
-            })).Start();
+                tasks.Add(new Task<Singleton>(
+                    () =>
+                    {
+                        return Singleton.Instance;
+                    }));
+            }
 
-            Singleton s2 = Singleton.Instance;
+            foreach (var item in tasks)
+            {
+                item.Start();
+            }
 
-            Console.WriteLine(s2.Date);
+            foreach (var item in tasks)
+            {
+                item.Wait();
+            }
+
+            Console.WriteLine(Singleton.instances);
         }
     }
 
-    public class Singleton
+    public sealed class Singleton
     {
-        private static readonly Singleton instance = new Singleton();
+        private static volatile Singleton instance;
 
         public string Date { get; set; }
 
+        private static object obj = new object();
+
         private Singleton()
         {
-            if (instance != null)
-            {
-                Console.WriteLine("Already created object");
-            }
-
             Date = DateTime.Now.TimeOfDay.ToString();
         }
 
         public static Singleton Instance
         {
             get
-            { 
+            {
+                if (instance == null)
+                {
+                    lock (obj)
+                    {
+                        if (instance == null)
+                        {
+                            ++instances;
+                            instance = new Singleton();
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Object is already created");
+                }
+
                 return instance;
             }
         }
+
+        public static int instances = 0;
     }
 }

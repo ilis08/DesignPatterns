@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProxyPattern
 {
-    /// <summary>
-    /// Abstract class Subject
-    /// </summary>
+   
     public abstract class Subject
     {
         public abstract void DoSomeWork();
@@ -14,58 +14,43 @@ namespace ProxyPattern
 
     public class ConcreteSubject : Subject
     {
-        private static readonly ConcreteSubject concreteSubject = new ConcreteSubject();
-
-        private ConcreteSubject()
-        {
-
-        }
-
-        public static ConcreteSubject GetInstance
-        {
-            get
-            {
-                return concreteSubject;
-            }
-        }
-
         public override void DoSomeWork()
         {
-            Console.WriteLine("ConcreteSubject.DoSomeWork()");
+            Console.WriteLine(this.GetType()+" Do some work!");
         }
     }
 
     public class Proxy : Subject
     {
-        Subject cs;
+        public string currentName { get; set; }
+        private string[] allowedUsers = new[] { "Iliya", "Admin", "Ivan" };
 
-        string[] registeredUsers;
-        string currentUser;
-
-        public Proxy(string currentUser)
+        public Proxy(string name)
         {
-            registeredUsers = new string[] { "Admin", "Rohit", "Sam" };
-
-            this.currentUser = currentUser;
+            currentName = name;
         }
+
+        private ConcreteSubject subject;
 
         public override void DoSomeWork()
         {
-            Console.WriteLine("Proxy call happening now...");
+            Console.WriteLine("Proxy call...");
 
-            Console.WriteLine($"{currentUser} wants to invoke a proxy");
+            Console.WriteLine($"{currentName} wants to get invo!");
 
-            if (registeredUsers.Contains(currentUser))
+            if (allowedUsers.Contains(currentName))
             {
-                cs = ConcreteSubject.GetInstance;
+                if (subject == null)
+                {
+                    subject = new ConcreteSubject();
+                }
 
-                cs.DoSomeWork();
+                subject.DoSomeWork();
             }
             else
             {
-                Console.WriteLine($"Sorry {currentUser}, you do not have access.");
+                Console.WriteLine($"Sorry {currentName}, you don't have permission to get info!");
             }
-            
         }
     }
 
@@ -73,16 +58,34 @@ namespace ProxyPattern
     {
         static void Main(string[] args)
         {
-            (new Thread(() =>
-           {
-               Proxy proxy1 = new Proxy("Aboba");
 
-               proxy1.DoSomeWork();
-           })).Start();
+            List<string> names = new List<string>()
+            {
+                "Iliya", "Aboba", "Sergey", "Alex", "Ivan"
+            };
 
-            Proxy proxy = new Proxy("Admin");
+            List<Task> tasks = new List<Task>();
 
-            proxy.DoSomeWork();
+            foreach (var item in names)
+            {
+                tasks.Add(new Task(
+                    () =>
+                    {
+                        Proxy proxy = new Proxy(item);
+                        proxy.DoSomeWork();
+                    }));
+            }
+
+            foreach (var item in tasks)
+            {
+                item.Start();
+            }
+
+            foreach (var item in tasks)
+            {
+                item.Wait();
+            }
+
         }
     }
 }

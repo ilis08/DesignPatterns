@@ -6,17 +6,18 @@ namespace PrototypePattern
     {
         static void Main(string[] args)
         {
-            BasicCar nano_base = new Nano("Green Nano") { Price = 100000 };
+            BasicCar ford = new Ford("Ford");
 
-            BasicCar ford_base = new Ford("Ford Yellow") { Price = 500000 };
+            Console.WriteLine(ford.Engine.ID);
 
-            BasicCar bc1;
 
-            bc1 = nano_base.Clone();
+            BasicCar newFord = ford.Clone();
 
-            bc1.Price = BasicCar.SetPrice();
+            Console.WriteLine(newFord.Engine.Name);
 
-            Console.WriteLine($"Car is : {bc1.ModelName}, and it's price is {bc1.Price}");
+            ford.Engine.Name = "V6";
+
+            Console.WriteLine(newFord.Engine.Name);
         }
     }
 
@@ -25,6 +26,8 @@ namespace PrototypePattern
         public string ModelName { get; set; }
 
         public int Price { get; set; }
+
+        public Engine Engine { get; set; }
 
         public static int SetPrice()
         {
@@ -39,6 +42,7 @@ namespace PrototypePattern
         }
 
         public abstract BasicCar Clone();
+
     }
 
 
@@ -60,11 +64,35 @@ namespace PrototypePattern
         public Ford(string m)
         {
             ModelName = m;
+            Engine = new Engine("V12");
         }
 
         public override BasicCar Clone()
         {
-            return (Ford)this.MemberwiseClone();
+            Ford newFord = (Ford)this.MemberwiseClone();
+
+            Engine currentEngine = new Engine(this.Engine.Name);
+
+            currentEngine.ID = this.Engine.ID;
+
+            newFord.Engine = currentEngine;
+
+            return newFord;
         }
+    }
+
+    public class Engine
+    {
+        
+
+        public Engine(string name)
+        {
+            Name = name;
+            ID = Guid.NewGuid();
+        }
+
+        public string Name { get; set; }
+        public Guid ID { get; set; }
+
     }
 }
