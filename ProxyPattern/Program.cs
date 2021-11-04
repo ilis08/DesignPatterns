@@ -6,50 +6,59 @@ using System.Threading.Tasks;
 
 namespace ProxyPattern
 {
-   
+
     public abstract class Subject
     {
-        public abstract void DoSomeWork();
+        public abstract void GetInfo();
     }
 
     public class ConcreteSubject : Subject
     {
-        public override void DoSomeWork()
+        private readonly string secretInfo = "XWH918MAD";
+
+        public override void GetInfo()
         {
-            Console.WriteLine(this.GetType()+" Do some work!");
+            Console.WriteLine($"Secret info is {secretInfo}");
         }
     }
 
     public class Proxy : Subject
     {
-        public string currentName { get; set; }
-        private string[] allowedUsers = new[] { "Iliya", "Admin", "Ivan" };
-
-        public Proxy(string name)
+        private Dictionary<string, string> usersAvailable = new()
         {
-            currentName = name;
-        }
+            ["Admin"] = "a8a8",
+            ["Iliya"] = "ilis08"
+        };
+
+        public Dictionary<string, string> userRequestData;
 
         private ConcreteSubject subject;
 
-        public override void DoSomeWork()
+        public Proxy(Dictionary<string, string> dict)
         {
-            Console.WriteLine("Proxy call...");
+            userRequestData = dict;
+        }
 
-            Console.WriteLine($"{currentName} wants to get invo!");
-
-            if (allowedUsers.Contains(currentName))
+      
+        public override void GetInfo()
+        {
+            foreach (var item in userRequestData)
             {
-                if (subject == null)
+                Console.WriteLine("Proxy call");
+
+                if (usersAvailable.ContainsKey(item.Key) && usersAvailable.ContainsValue(item.Value))
                 {
-                    subject = new ConcreteSubject();
-                }
+                    if (subject == null)
+                    {
+                        subject = new ConcreteSubject();
+                    }
 
-                subject.DoSomeWork();
-            }
-            else
-            {
-                Console.WriteLine($"Sorry {currentName}, you don't have permission to get info!");
+                    subject.GetInfo();
+                }
+                else
+                {
+                    Console.WriteLine($"Sorry {item.Key}, you don't have permission to get value");
+                }
             }
         }
     }
@@ -59,32 +68,17 @@ namespace ProxyPattern
         static void Main(string[] args)
         {
 
-            List<string> names = new List<string>()
+            Dictionary<string, string> users = new()
             {
-                "Iliya", "Aboba", "Sergey", "Alex", "Ivan"
+                ["Admin"] = "a8a8",
+                ["Aboba"] = "abpdsafa",
+                ["Ivan"]="4asv9m"
             };
 
-            List<Task> tasks = new List<Task>();
+            Proxy proxy = new Proxy(users);
 
-            foreach (var item in names)
-            {
-                tasks.Add(new Task(
-                    () =>
-                    {
-                        Proxy proxy = new Proxy(item);
-                        proxy.DoSomeWork();
-                    }));
-            }
-
-            foreach (var item in tasks)
-            {
-                item.Start();
-            }
-
-            foreach (var item in tasks)
-            {
-                item.Wait();
-            }
+            proxy.GetInfo();
+           
 
         }
     }

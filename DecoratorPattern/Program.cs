@@ -1,66 +1,100 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DecoratorPattern
 {
-    abstract class Component
+    public abstract class Dealership
     {
-        public abstract void MakeHouse();
+        public Dealership(int numVehicle)
+        {
+            NumVehicles = numVehicle;
+        }
+
+        public Dealership()
+        {
+
+        }
+
+        public int NumVehicles { get; set; }
+
+        public abstract void ShowStates();
     }
 
-    class ConcreteComponent : Component
+    public class CarDealership : Dealership
     {
-        public override void MakeHouse()
+        public int Area { get; set; }
+
+        public CarDealership(int numCars,int area) : base(numCars)
         {
-            Console.WriteLine("Original House is complete. It is closed for modification.");
+            Area = area;
+        }
+
+        public override void ShowStates()
+        {
+            Console.WriteLine("\nCarDealership ----- ");
+            Console.WriteLine($"Number of car inside : {NumVehicles}");
+            Console.WriteLine($"Area of dealership is {Area} sqr meters");
         }
     }
 
-    abstract class AbstractDecorator : Component
+    public class MotoDealership : Dealership
     {
-        protected Component component;
+        public int NumberOfMotoSections { get; set; }
 
-        public void SetTheComponent(Component c)
+
+        public MotoDealership(int numMoto, int numOfSections) : base(numMoto)
         {
-            component = c;
+            NumberOfMotoSections = numOfSections; 
         }
 
-        public override void MakeHouse()
+        public override void ShowStates()
         {
-            if (component!=null)
+            Console.WriteLine("\nMotoDealership ----- ");
+            Console.WriteLine($"Number of moto inside : {NumVehicles}");
+            Console.WriteLine($"Number of moto sections is {NumberOfMotoSections}");
+        }
+    }
+
+    public class DealershipDecorator : Dealership
+    {
+        protected Dealership dealership;
+
+        public DealershipDecorator(Dealership dealership)
+        {
+            this.dealership = dealership;
+        }
+
+        public override void ShowStates()
+        {
+            dealership.ShowStates();
+        }
+    }
+
+    public class SaleVehicle : DealershipDecorator
+    {
+        public List<string> buyers = new();
+
+        public SaleVehicle(Dealership dealership) : base(dealership)
+        {
+
+        }
+
+        public void Sell(string buyerName)
+        {
+            buyers.Add(buyerName);
+            dealership.NumVehicles--;       
+        }
+        
+        public override void ShowStates()
+        {
+            base.ShowStates();
+
+            Console.WriteLine("Buyers");
+
+            foreach (var item in buyers)
             {
-                component.MakeHouse();
+                Console.WriteLine($"Buyer : {item}");
             }
-        }
-    }
-
-    class ConcreteDecoratorEx1 : AbstractDecorator
-    {
-        public override void MakeHouse()
-        {
-            base.MakeHouse();
-            Console.WriteLine("***Using a decorator***");
-
-            AddFloor();
-        }
-
-        private void AddFloor()
-        {
-            Console.WriteLine("I am making an additional floor on top of it.");
-        }
-    }
-
-    class ConcreteDecoratorEx2 : AbstractDecorator
-    {
-        public override void MakeHouse()
-        {
-            base.MakeHouse();
-            Console.WriteLine("***Using another decorator***");
-            PaintTheHouse();
-        }
-
-        private void PaintTheHouse()
-        {
-            Console.WriteLine("Now I am painting the house.");
         }
     }
 
@@ -68,18 +102,15 @@ namespace DecoratorPattern
     {
         static void Main(string[] args)
         {
-            ConcreteComponent cc = new ConcreteComponent();
+            Dealership carDealership = new CarDealership(15, 100);
 
-            AbstractDecorator dec1 = new ConcreteDecoratorEx1();
+            SaleVehicle sale = new SaleVehicle(carDealership);
 
-            dec1.SetTheComponent(cc);
-            dec1.MakeHouse();
+            sale.Sell("Iliya");
+            sale.Sell("Ivan");
+            sale.Sell("Sergey");
 
-
-            AbstractDecorator dec2 = new ConcreteDecoratorEx2();
-
-            dec2.SetTheComponent(dec1);
-            dec2.MakeHouse();
+            sale.ShowStates();
 
         }
     }
