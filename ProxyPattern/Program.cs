@@ -6,80 +6,79 @@ using System.Threading.Tasks;
 
 namespace ProxyPattern
 {
-
-    public abstract class Subject
+    public interface ISubject
     {
-        public abstract void GetInfo();
+        public void GetInfo();
     }
 
-    public class ConcreteSubject : Subject
+    public class ConcreteSubject : ISubject
     {
-        private readonly string secretInfo = "XWH918MAD";
+        private string importantData = "Ax8G551nah3";
 
-        public override void GetInfo()
+        public void GetInfo()
         {
-            Console.WriteLine($"Secret info is {secretInfo}");
+            Console.WriteLine($"Important data is {importantData}");
         }
     }
 
-    public class Proxy : Subject
+    public class Proxy : ISubject
     {
-        private Dictionary<string, string> usersAvailable = new()
+        private ConcreteSubject concreteSubject;
+
+        private Dictionary<string, int> allowedUsers = new()
         {
-            ["Admin"] = "a8a8",
-            ["Iliya"] = "ilis08"
+            ["Iliya"] = 1234,
+            ["Alex"] = 3291
         };
 
-        public Dictionary<string, string> userRequestData;
+        private Dictionary<string, int> currentUsers;
 
-        private ConcreteSubject subject;
-
-        public Proxy(Dictionary<string, string> dict)
+        public Proxy(Dictionary<string, int> currentUsers)
         {
-            userRequestData = dict;
+            this.currentUsers = currentUsers;
         }
 
-      
-        public override void GetInfo()
+        public void GetInfo()
         {
-            foreach (var item in userRequestData)
+            foreach (var item in currentUsers)
             {
-                Console.WriteLine("Proxy call");
+                Console.WriteLine("Proxy call happening here...");
+                Console.WriteLine($"{item.Key} wants to invoke a proxy method.");
 
-                if (usersAvailable.ContainsKey(item.Key) && usersAvailable.ContainsValue(item.Value))
+                if (allowedUsers.ContainsKey(item.Key) & allowedUsers.ContainsValue(item.Value))
                 {
-                    if (subject == null)
+                    if (concreteSubject==null)
                     {
-                        subject = new ConcreteSubject();
+                        concreteSubject = new ConcreteSubject();
                     }
 
-                    subject.GetInfo();
+                    concreteSubject.GetInfo();
                 }
                 else
                 {
-                    Console.WriteLine($"Sorry {item.Key}, you don't have permission to get value");
+                    Console.WriteLine($"{item.Key} does not allowed to get a resources.");
                 }
+
+
+                Console.WriteLine("End of Proxy call.");
             }
         }
     }
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-
-            Dictionary<string, string> users = new()
+            Dictionary<string, int> users = new Dictionary<string, int>
             {
-                ["Admin"] = "a8a8",
-                ["Aboba"] = "abpdsafa",
-                ["Ivan"]="4asv9m"
+                ["Iliya"] = 1234,
+                ["Aboba"] = 3245
             };
 
             Proxy proxy = new Proxy(users);
 
             proxy.GetInfo();
-           
-
         }
     }
+
 }
