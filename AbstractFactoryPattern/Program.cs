@@ -2,43 +2,43 @@
 
 namespace AbstractFactoryPattern
 {
-    public abstract class Program
+    public interface IProgram
     {
-        public abstract void ProgramType();
+        public void ProgramType();
     }
 
-    public class Web : Program
+    public class Web : IProgram
     {
-        public override void ProgramType()
+        public void ProgramType()
         {
             Console.WriteLine("Create Web program");
         }
     }
 
-    public class Desktop : Program
+    public class Desktop : IProgram
     {
-        public override void ProgramType()
+        public void ProgramType()
         {
             Console.WriteLine("Create Desktop program");
         }
     }
 
-    public abstract class DeveloperFactory
+    public interface IDeveloperFactory
     {
-        public abstract Program ReturnProgram();
+        public IProgram ReturnProgram();
     }
 
-    public class WebDeveloper : DeveloperFactory
+    public class WebDeveloper : IDeveloperFactory
     {
-        public override Program ReturnProgram()
+        public IProgram ReturnProgram()
         {
             return new Web();
         }
     }
 
-    public class DesktopDeveloper : DeveloperFactory
+    public class DesktopDeveloper : IDeveloperFactory
     {
-        public override Program ReturnProgram()
+        public IProgram ReturnProgram()
         {
             return new Desktop(); 
         }
@@ -46,9 +46,9 @@ namespace AbstractFactoryPattern
 
     public class Programmer
     {
-        private Program program;
+        private IProgram program;
 
-        public Programmer(DeveloperFactory factory)
+        public Programmer(IDeveloperFactory factory)
         {
             program = factory.ReturnProgram();
         }
